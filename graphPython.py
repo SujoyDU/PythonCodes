@@ -38,6 +38,7 @@ class Graph:
             self.addVertex(vertex2)
         
         self.vertexList[vertex1].addConnectedNode(self.vertexList[vertex2],cost)
+        self.vertexList[vertex2].addConnectedNode(self.vertexList[vertex1],cost)
 
     def getVertexList(self):
         return self.vertexList.keys()

@@ -29,11 +29,11 @@ def CoinChange(coinsList,amount):
     minCoins ={}
     coinTotal = amount
     while (coinIndex[coinTotal] != -1):
-        value = coinsList[coinIndex[coinTotal]]
-        if value not in minCoins:
-            minCoins[value] = 1
-        else: minCoins[value] +=1
-        coinTotal = coinTotal-value
+        coin = coinsList[coinIndex[coinTotal]]
+        if coin not in minCoins:
+            minCoins[coin] = 1
+        else: minCoins[coin] +=1
+        coinTotal = coinTotal-coin
 
     for coin, numOfCoins in minCoins.items():
         print(str(numOfCoins)+" times coin "+str(coin))
