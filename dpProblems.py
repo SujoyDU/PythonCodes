@@ -42,9 +42,9 @@ def CoinChange(coinsList,amount):
 
 
 if __name__ == ('__main__'):
-    # print("Tower Of Hanoi")
-    # TowerOfHanoi(4)
-    print("Coin change")
-    coinsList = [10,5,1,25]
-    amount = 60
-    CoinChange(coinsList,amount)
+    print("Tower Of Hanoi")
+    TowerOfHanoi(3)
+    # print("Coin change")
+    # coinsList = [10,5,1,20]
+    # amount = 54
+    # CoinChange(coinsList,amount)
