@@ -1,7 +1,7 @@
 #Two pointer method
 from timeit import default_timer as timer
 import random as rand
-
+import os
 
 def mergeSort(listOfElements):
     if (len(listOfElements) > 1):
@@ -93,10 +93,51 @@ def findSumPairsMergeSort(x,target):
     print(f'Time in merge sort: {end - start}')
 
 
+'''
+Hacker Rank problem: https://www.hackerrank.com/challenges/pairs/problem
 
-xList = rand.sample(range(-100000,100000),15000)
+'''
+def findSubtractPairs(x, target):
+
+    x.sort( reverse= True)
+    # print(x)
+
+    counter, i, j = 0, 0, 1
+
+    while i < len(x) and j < len(x):
+        if( x[i] - x[j] > target):
+            i += 1
+        elif (x[i] - x[j] < target):
+            j += 1
+        else:
+            counter +=1
+            # print(f'{x[i]} {x[j]}')
+            i +=1
+            j +=1
+
+    print(counter)
+
+if __name__ == '__main__':
+
+
+    nk = input().split()
+
+    n = int(nk[0])
+
+    k = int(nk[1])
+
+    arr = list(map(int, input().rstrip().split()))
+
+    print(arr)
+    findSubtractPairs(arr,k)
+
+
+        # xList = rand.sample(range(-100000,100000),15000)
 # xList = [11, 4, 1 ,5, -2, -1, 8, 10, -3]
 # print(xList)
-findSumPairs(xList,777)
-findSumPairsMergeSort(xList,777)
-findSumPairsBrute(xList,777)
+# findSumPairs(xList,777)
+# findSumPairsMergeSort(xList,777)
+# findSumPairsBrute(xList,777)
+
+# yList = [1,5,3,4,2]
+# findSubtractPairs(yList,2)
