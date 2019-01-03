@@ -7,6 +7,7 @@ assets/data/
 /tmp
 /out-tsc
 
+.vscode/
 # Runtime data
 pids
 *.pid
