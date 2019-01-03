@@ -48,9 +48,20 @@ def mergeSort(listOfElements):
 
     print (listOfElements)
 
+def selectionSort(arrList,startIndex=0):
+    if startIndex < len(arrList):
+        minVal,index = min((val, idx) for idx, val in enumerate(arrList[startIndex:]))
+        index += startIndex
+        arrList[index] = arrList[startIndex]
+        arrList[startIndex] = minVal
+        selectionSort(arrList,startIndex+1)
+
 
 
 if __name__ == ('__main__'):
     listOfItems = [48,27,22,90,100,33,67]
     # bubbleSort(listOfItems)
-    mergeSort(listOfItems)
+    # mergeSort(listOfItems)
+    selectionSort(listOfItems)
+    print(listOfItems)
+
