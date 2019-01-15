@@ -1,3 +1,4 @@
+
 class Node:
     def __init__(self,val = None):
         self.parent = None
@@ -112,6 +113,13 @@ class Node:
         print(self.data)
         if self.rightChild is not None:
             self.rightChild.printInorder()
+    
+    def height(self,node):
+        if node == None: return 0
+        ldepth = self.height(node.leftChild)
+        rdepth = self.height(node.rightChild)
+        if(ldepth > rdepth): return ldepth + 1
+        else: return rdepth + 1
         
 
 if __name__ == ('__main__'):
@@ -121,18 +129,20 @@ if __name__ == ('__main__'):
     x.insert(4)
     x.insert(1)
     x.insert(12)
-    x.insert(15)
-    x.insert(18)
-    x.insert(17)
-    x.insert(20)
-    x.insert(16)
-    x.printInorder()
-    x.findNode(16)
-    x.deleteNode(17)
+    # x.insert(15)
+    # x.insert(18)
+    # x.insert(17)
+    # x.insert(20)
+    # x.insert(16)
+    # x.printInorder()
+    # x.findNode(16)
+    # x.deleteNode(17)
 
     # x.deleteNode(18)   
     x.printInorder()
-    x.findNode(16)
+    depth = x.height(x.findNode(7))
+    print(depth)
+
 
     
     
