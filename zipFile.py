@@ -13,13 +13,11 @@ def helpInfo():
     ''')
 
 def compressFile(path,size=0):
-    outputFileName = 'archive.zip'
-    try:
-        outputZip = ZipFile(outputFileName, 'w')
+    try:     
         description = 'Description of archive code\n'
-
         if(os.path.exists(path)):
-
+            outputFileName = 'archive.zip'
+            outputZip = ZipFile(outputFileName, 'w')
             for folder,subfolders, files in os.walk(path):
                 for fileName in files:
                     fsize = os.stat(os.path.join(folder,fileName)).st_size
@@ -30,6 +28,7 @@ def compressFile(path,size=0):
                         description +=f'{fileName} has file size of {fsize} which is greater than minimum size {size}\n'
                         zippedFilePath = os.path.join(folder, fileName)
                         zippedFileName = fileName
+
                         outputZip.write(zippedFilePath,zippedFileName, compress_type=ZIP_DEFLATED)                                                        
         else:
             description += 'Path is invalid\n'
@@ -39,7 +38,7 @@ def compressFile(path,size=0):
         if(os.path.exists(outputFileName)):
             with ZipFile(outputFileName, 'r') as zip: 
                 for info in zip.infolist(): 
-                        description += info.filename + '\n' \
+                        description = info.filename + '\n' \
                                        + ('\tModified:\t' + str(datetime.datetime(*info.date_time))) + '\n' \
                                        + ('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)') + '\n' \
                                        + ('\tZIP version:\t' + str(info.create_version)) + '\n' \
@@ -76,5 +75,21 @@ def compressFile(path,size=0):
 #     else:
 #         print('please enter correct email address')
 
-helpInfo()
-compressFile('C:\FolderToUse', 1000000)
+# helpInfo()
+# compressFile('C:\abcd', 1000000)
+
+import tempfile
+with tempfile.TemporaryFile() as delFile:
+    outputFile = ZipFile(delFile,'w')
+    outputFile.write('bfsdfs.py','b.py',compress_type=ZIP_DEFLATED)
+    outputFile.close()
+
+    with ZipFile(delFile, 'r') as zip: 
+        for info in zip.infolist(): 
+                description = info.filename + '\n' \
+                                + ('\tModified:\t' + str(datetime.datetime(*info.date_time))) + '\n' \
+                                + ('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)') + '\n' \
+                                + ('\tZIP version:\t' + str(info.create_version)) + '\n' \
+                                + ('\tCompressed:\t' + str(info.compress_size) + ' bytes') + '\n' \
+                                + ('\tUncompressed:\t' + str(info.file_size) + ' bytes') + '\n'               
+    print(description)       
