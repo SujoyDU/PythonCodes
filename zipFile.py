@@ -1,73 +1,80 @@
 import os
-import smtplib
-import zipfile
-import re
+import datetime
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
-MY_ADDRESS = 'my_email_address'
-PASSWORD = 'my_password'
-HOST = 'HOST'
-PORT = '587'
-DESCRIPTION ='None'
-SIZE = 100000
+def helpInfo():
+    print('''
+        This program compresses those files in a given folder that are bigger than a given size.\n
+        This program takes two parameters.\n
+            a. First parameter is a String that is Path of the Folder to compress.
+            b. Second paramenter is an Integer that is MinimumSize in Bytes.\n
+        This program will compress those files whose file size is bigger than the MinimumSize.\n
+        If No MinimumSize is given this will compress all the files in the folder.
+    ''')
 
+def compressFile(path,size=0):
+    outputFileName = 'archive.zip'
+    try:
+        outputZip = ZipFile(outputFileName, 'w')
+        description = 'Description of archive code\n'
 
-def compressFile(path,size):
-    output_zip = zipfile.ZipFile('D:\\archive.zip', 'w')
-    description = 'Description of archive code\n'
-    if(os.path.exists(path)):
-        for folder, subfolders, files in os.walk(path):
+        if(os.path.exists(path)):
 
-            for file in files:
-                fsize = os.stat(os.path.join(folder,file)).st_size
-                if(fsize < size):
-                    description += f'{file} has file size of {fsize}  which is below requirement\n'
-                elif (file.endswith('.jpg') or file.endswith('.zip')):
-                    description += f'{file} is already compressed\n'
-                    print()
-                else:
-                    description +=f'{fsize} and {file} meets requirement\n'
-                    output_zip.write(os.path.join(folder, file),
-                                      os.path.relpath(os.path.join(folder, file), 'D:\\images'),
-                                      compress_type=zipfile.ZIP_DEFLATED)
-
-        return True, description
-    else:
-        return False, 'no folders in the path'
-
-
-
-def send_email(recipient):
-
-    pattern = "^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$"
-    if re.match(pattern,recipient)!=None :
-
-        FROM = MY_ADDRESS
-        TO = recipient
-        SUBJECT = 'description of the code'
-        TEXT = DESCRIPTION
-
-        message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM, "".join(TO), SUBJECT, TEXT)
-
-        # print(message)
-        try:
-            server = smtplib.SMTP(HOST,PORT)
-            server.ehlo()
-            server.starttls()
-            server.login(MY_ADDRESS,PASSWORD)
-            server.sendmail(FROM, TO, message)
-            server.close()
-            print('successfully sent the mail')
-        except:
-            print("failed to send mail")
-    else:
-        print('please enter correct email address')
+            for folder,subfolders, files in os.walk(path):
+                for fileName in files:
+                    fsize = os.stat(os.path.join(folder,fileName)).st_size
+                    if(fsize < size):
+                        description += f'{fileName} has file size of {fsize} which is less than minimum size {size}\n'
+                    
+                    else:
+                        description +=f'{fileName} has file size of {fsize} which is greater than minimum size {size}\n'
+                        zippedFilePath = os.path.join(folder, fileName)
+                        zippedFileName = fileName
+                        outputZip.write(zippedFilePath,zippedFileName, compress_type=ZIP_DEFLATED)                                                        
+        else:
+            description += 'Path is invalid\n'
+    
+    finally:
+        outputZip.close()
+        if(os.path.exists(outputFileName)):
+            with ZipFile(outputFileName, 'r') as zip: 
+                for info in zip.infolist(): 
+                        description += info.filename + '\n' \
+                                       + ('\tModified:\t' + str(datetime.datetime(*info.date_time))) + '\n' \
+                                       + ('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)') + '\n' \
+                                       + ('\tZIP version:\t' + str(info.create_version)) + '\n' \
+                                       + ('\tCompressed:\t' + str(info.compress_size) + ' bytes') + '\n' \
+                                       + ('\tUncompressed:\t' + str(info.file_size) + ' bytes') + '\n'               
+        print(description)       
+                                                
 
 
-flag, des = compressFile('D:\\images', SIZE)
 
-if(flag):
-    DESCRIPTION = des
-    send_email('abcd@cd.com')
-else:
-    DESCRIPTION= None
-    print(des)
+# def send_email(recipient):
+
+#     pattern = "^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$"
+#     if re.match(pattern,recipient)!=None :
+
+#         FROM = MY_ADDRESS
+#         TO = recipient
+#         SUBJECT = 'description of the code'
+#         TEXT = DESCRIPTION
+
+#         message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM, "".join(TO), SUBJECT, TEXT)
+
+#         # print(message)
+#         try:
+#             server = smtplib.SMTP(HOST,PORT)
+#             server.ehlo()
+#             server.starttls()
+#             server.login(MY_ADDRESS,PASSWORD)
+#             server.sendmail(FROM, TO, message)
+#             server.close()
+#             print('successfully sent the mail')
+#         except:
+#             print("failed to send mail")
+#     else:
+#         print('please enter correct email address')
+
+helpInfo()
+compressFile('C:\FolderToUse', 1000000)
