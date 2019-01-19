@@ -1,6 +1,7 @@
 import os
 import datetime
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
+import tempfile
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
 
 def helpInfo():
     print('''
@@ -12,20 +13,48 @@ def helpInfo():
         If No MinimumSize is given this will compress all the files in the folder.
     ''')
 
+
+def getRatio(path):    
+    with tempfile.TemporaryFile() as delFile:
+        outputFile = ZipFile(delFile,'w')
+        outputFile.write(path,'testfile',compress_type=ZIP_DEFLATED)
+        outputFile.close()
+
+        with ZipFile(delFile, 'r') as archive: 
+            for info in archive.infolist(): 
+                    description = info.filename + '\n' \
+                                    + ('\tModified:\t' + str(datetime.datetime(*info.date_time))) + '\n' \
+                                    + ('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)') + '\n' \
+                                    + ('\tZIP version:\t' + str(info.create_version)) + '\n' \
+                                    + ('\tCompressed:\t' + str(info.compress_size) + ' bytes') + '\n' \
+                                    + ('\tUncompressed:\t' + str(info.file_size) + ' bytes') + '\n'               
+        print(description)
+        
+    
+    return 5       
+        
+
+
+
 def compressFile(path,size=0):
     try:     
         description = 'Description of archive code\n'
         if(os.path.exists(path)):
             outputFileName = 'archive.zip'
             outputZip = ZipFile(outputFileName, 'w')
+
             for folder,subfolders, files in os.walk(path):
                 for fileName in files:
                     fsize = os.stat(os.path.join(folder,fileName)).st_size
                     if(fsize < size):
                         description += f'{fileName} has file size of {fsize} which is less than minimum size {size}\n'
-                    
+                    elif is_zipfile(os.path.join(folder,fileName)):
+                        description += f'{fileName} is already an achived file\n'        
                     else:
                         description +=f'{fileName} has file size of {fsize} which is greater than minimum size {size}\n'
+                        ratio = getRatio(os.path.join(folder,fileName))
+
+
                         zippedFilePath = os.path.join(folder, fileName)
                         zippedFileName = fileName
 
