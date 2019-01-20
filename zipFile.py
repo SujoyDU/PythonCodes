@@ -2,6 +2,10 @@ import os
 import datetime
 import tempfile
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
+import re
+import smtplib
+
+messageBody = ''
 
 def helpInfo():
     print('''
@@ -69,26 +73,26 @@ def compressedFile(path,size=0):
                                        + ('\tZIP version:\t' + str(info.create_version)) + '\n' \
                                        + ('\tCompressed:\t' + str(info.compress_size) + ' bytes') + '\n' \
                                        + ('\tUncompressed:\t' + str(info.file_size) + ' bytes') + '\n'               
-        print(description)       
+    
+    return description       
                                                 
 
 
 
 def send_email(recipient):
-
     pattern = "^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$"
+    MY_ADDRESS = 'MY_EMAIL_ADDRESS'
+    PASSWORD = 'MY_PASSWORD'
     if re.match(pattern,recipient)!=None :
-
+        # print('valid email')
         FROM = MY_ADDRESS
         TO = recipient
         SUBJECT = 'description of the code'
-        TEXT = DESCRIPTION
-
-        message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM, "".join(TO), SUBJECT, TEXT)
-
+        TEXT = messageBody
+        message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM, TO, SUBJECT, TEXT)
         # print(message)
         try:
-            server = smtplib.SMTP(HOST,PORT)
+            server = smtplib.SMTP('smtp.gmail.com',587)
             server.ehlo()
             server.starttls()
             server.login(MY_ADDRESS,PASSWORD)
@@ -100,5 +104,15 @@ def send_email(recipient):
     else:
         print('please enter correct email address')
 
+
+
 # helpInfo()
-# compressedFile('C:\FolderToUse', 100000)
+# messageBody = compressedFile('C:\FolderToUse', 100000)
+# send_email('debnath.sujoy@hotmail.com')
+
+# FROM = 'MY_ADDRESS'
+# TO = 'recipient'
+# SUBJECT = 'description of the code'
+# TEXT = 'hello from me'
+# message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM,TO,SUBJECT,TEXT)
+# print(message)
