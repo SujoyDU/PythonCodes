@@ -4,6 +4,7 @@ import tempfile
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
 import re
 import smtplib
+import argparse
 
 messageBody = ''
 
@@ -29,7 +30,7 @@ def getRatio(path):
                     ratio = (info.compress_size/info.file_size)*100
         
     compressRatio = 100 - ratio
-    print(compressRatio)
+    # print(compressRatio)
     return compressRatio
         
 
@@ -64,6 +65,7 @@ def compressedFile(path,size=0):
     
     finally:
         outputZip.close()
+        
         if(os.path.exists(outputFileName)):
             with ZipFile(outputFileName, 'r') as zip: 
                 for info in zip.infolist(): 
@@ -83,6 +85,8 @@ def send_email(recipient):
     pattern = "^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$"
     MY_ADDRESS = 'MY_EMAIL_ADDRESS'
     PASSWORD = 'MY_PASSWORD'
+    MY_ADDRESS = 'sujoystjhs@gmail.com'
+    PASSWORD = '7744A11gs1234abc'
     if re.match(pattern,recipient)!=None :
         # print('valid email')
         FROM = MY_ADDRESS
@@ -116,3 +120,13 @@ def send_email(recipient):
 # TEXT = 'hello from me'
 # message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (FROM,TO,SUBJECT,TEXT)
 # print(message)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=helpInfo())
+    parser.add_argument("path", help = "path of the folder to be compressed")
+    parser.add_argument("tolerance", type = int, help = "Minimum file size that won't be compressed")
+    parser.add_argument("email", help = "recepient email address")
+    args = parser.parse_args()
+
+    messageBody = compressedFile(args.path, args.tolerance)
+    send_email(args.email)
